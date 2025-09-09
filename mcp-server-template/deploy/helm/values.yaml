@@ -1,0 +1,304 @@
+# Default values for mcp-server Helm chart
+
+# Global configuration
+global:
+  # Container registry settings
+  imageRegistry: ""
+  imagePullSecrets: []
+
+# Application configuration
+app:
+  name: mcp-server
+  version: "1.0.0"
+
+# Image configuration
+image:
+  repository: mcp-server
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+# Pod configuration
+replicaCount: 1
+
+# Service account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 1001
+  runAsNonRoot: true
+  runAsUser: 1001
+
+# Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1001
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+  annotations: {}
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - host: mcp-server.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+    # - secretName: mcp-server-tls
+    #   hosts:
+    #     - mcp-server.local
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Horizontal Pod Autoscaler
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  # maxUnavailable: 1
+
+# Node selection
+nodeSelector: {}
+
+# Pod tolerations
+tolerations: []
+
+# Pod affinity and anti-affinity
+affinity: {}
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod labels
+podLabels: {}
+
+# Environment variables
+env: []
+  # - name: LOG_LEVEL
+  #   value: "info"
+  # - name: API_KEY
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: api-secrets
+  #       key: api-key
+
+# Environment variables from ConfigMaps or Secrets
+envFrom: []
+  # - configMapRef:
+  #     name: mcp-server-config
+  # - secretRef:
+  #     name: mcp-server-secrets
+
+# Volume mounts for the container
+volumeMounts:
+  - name: config
+    mountPath: /app/config.json
+    subPath: config.json
+    readOnly: true
+  - name: tmp
+    mountPath: /tmp
+
+# Volumes for the pod
+volumes:
+  - name: config
+    configMap:
+      name: "{{ include \"mcp-server.fullname\" . }}-config"
+  - name: tmp
+    emptyDir: {}
+
+# ConfigMap for server configuration
+config:
+  # Server configuration
+  server:
+    name: "{{ .Values.app.name }}"
+    version: "{{ .Values.app.version }}"
+    description: "MCP Server deployed via Helm"
+    
+  # Tools configuration (can be overridden)
+  tools: []
+    # - name: example_tool
+    #   description: "Example API tool"
+    #   endpoint: "https://api.example.com/data"
+    #   method: "GET"
+    #   parameters: []
+
+  # Prompts configuration
+  prompts: []
+    # - name: example_prompt
+    #   description: "Example prompt"
+    #   content: "Example prompt content"
+    #   arguments: []
+
+  # Resources configuration
+  resources: []
+    # - uri: "example://resource"
+    #   name: "Example Resource"
+    #   description: "Example resource"
+    #   mime_type: "text/plain"
+    #   content: "Example content"
+
+  # Security configuration
+  security:
+    enable_cors: true
+    allowed_origins: ["*"]
+    enable_rate_limit: true
+    rate_limit: 100
+    enable_auth: false
+
+  # Runtime configuration
+  runtime:
+    max_concurrent_requests: 50
+    default_timeout: "30s"
+    health_check_interval: "60s"
+    metrics_enabled: true
+    log_level: "info"
+    environment: "production"
+
+# Secrets for sensitive configuration
+secrets: {}
+  # api_keys:
+  #   openweather: "your-api-key"
+  #   custom_api: "another-key"
+
+# Probes configuration
+probes:
+  # Liveness probe
+  liveness:
+    enabled: true
+    httpGet:
+      path: /health
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+    successThreshold: 1
+
+  # Readiness probe
+  readiness:
+    enabled: true
+    httpGet:
+      path: /health
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+
+  # Startup probe
+  startup:
+    enabled: true
+    httpGet:
+      path: /health
+      port: http
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 30
+    successThreshold: 1
+
+# Monitoring configuration
+monitoring:
+  # ServiceMonitor for Prometheus
+  serviceMonitor:
+    enabled: false
+    namespace: ""
+    labels: {}
+    interval: 30s
+    path: /metrics
+    port: http
+
+  # PodMonitor for Prometheus
+  podMonitor:
+    enabled: false
+    namespace: ""
+    labels: {}
+    interval: 30s
+    path: /metrics
+    port: http
+
+# Network policies
+networkPolicy:
+  enabled: false
+  ingress: []
+  egress: []
+
+# Pod Security Policy (deprecated in favor of Pod Security Standards)
+podSecurityPolicy:
+  enabled: false
+
+# RBAC configuration
+rbac:
+  create: true
+  rules: []
+
+# Custom labels to add to all resources
+commonLabels: {}
+
+# Custom annotations to add to all resources
+commonAnnotations: {}
+
+# Lifecycle hooks
+lifecycle: {}
+  # preStop:
+  #   exec:
+  #     command: ["/bin/sh", "-c", "sleep 15"]
+
+# Init containers
+initContainers: []
+
+# Sidecar containers
+sidecars: []
+
+# Priority class
+priorityClassName: ""
+
+# Runtime class
+runtimeClassName: ""
+
+# Termination grace period
+terminationGracePeriodSeconds: 30
+
+# DNS configuration
+dnsPolicy: ClusterFirst
+dnsConfig: {}
+
+# Host aliases
+hostAliases: []
+
+# Restart policy
+restartPolicy: Always 

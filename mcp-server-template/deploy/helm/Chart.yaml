@@ -1,0 +1,34 @@
+apiVersion: v2
+name: mcp-server
+description: A Helm chart for deploying configurable MCP servers
+
+# Chart metadata
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+# Maintainer information
+maintainers:
+  - name: MCP Server Team
+    email: team@example.com
+
+# Keywords for chart discovery
+keywords:
+  - mcp
+  - model-context-protocol
+  - api
+  - server
+  - ai
+
+# Chart sources and documentation
+home: https://github.com/example/mcp-server-template
+sources:
+  - https://github.com/example/mcp-server-template
+
+# Dependencies (if any)
+dependencies: []
+
+# Annotations for additional metadata
+annotations:
+  category: AI/ML
+  licenses: MIT 

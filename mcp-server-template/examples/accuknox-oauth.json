@@ -1,0 +1,53 @@
+{
+  "server": {
+    "name": "accuknox-oauth-server",
+    "version": "1.0.0",
+    "description": "MCP server configured to work with AccuKnox dev (Google OIDC login via cspm.dev.accuknox.com)"
+  },
+  "tools": [
+    {
+      "name": "get_filters",
+      "description": "Get list of saved filters",
+      "endpoint": "https://cwpp.dev.accuknox.com/integrations/v3/getfilters",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json",
+        "Origin": "https://app.dev.accuknox.com",
+        "Referer": "https://app.dev.accuknox.com/",
+        "X-Tenant-Id": "{{.tenant_id}}"
+      },
+      "parameters": [
+        { "name": "PageID",    "type": "number", "description": "Page number", "required": true },
+        { "name": "PageSize",  "type": "number", "description": "Page size",   "required": true },
+        { "name": "Filters",   "type": "string", "description": "Filter (e.g. KubeArmor)", "required": true },
+        { "name": "Search",    "type": "string", "description": "Search term", "required": false },
+        { "name": "SortBy",    "type": "string", "description": "Sort field",  "required": false },
+        { "name": "tenant_id", "type": "string", "description": "AccuKnox tenant id header", "required": true }
+      ],
+      "body_template": "{\n  \"PageID\": {{.PageID}},\n  \"PageSize\": {{.PageSize}},\n  \"Filters\": \"{{.Filters}}\"{{if .Search}},\n  \"Search\": \"{{.Search}}\"{{end}}{{if .SortBy}},\n  \"SortBy\": \"{{.SortBy}}\"{{end}}\n}",
+      "return_type": "object",
+      "timeout": "20s",
+      "retries": 2,
+      "auth": { "type": "bearer", "env_var": "ACCUKNOX_TOKEN" }
+    }
+  ],
+  "security": {
+    "enable_cors": true,
+    "enable_rate_limit": false,
+    "enable_auth": false,
+    "oauth": {
+      "enabled": true,
+      "authorization_servers": ["https://cspm.dev.accuknox.com"],
+      "required_scopes": [],
+      "accepted_audiences": []
+    }
+  },
+  "runtime": {
+    "max_concurrent_requests": 64,
+    "default_timeout": "20s",
+    "health_check_interval": "30s",
+    "metrics_enabled": true,
+    "log_level": "info",
+    "environment": "development"
+  }
+}

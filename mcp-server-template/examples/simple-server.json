@@ -1,0 +1,65 @@
+{
+  "server": {
+    "name": "simple-api-server",
+    "version": "1.0.0",
+    "description": "A simple example MCP server with basic API integration"
+  },
+  "tools": [
+    {
+      "name": "get_quote",
+      "description": "Get a random inspirational quote",
+      "endpoint": "https://zenquotes.io/api/random",
+      "method": "GET",
+      "parameters": [],
+      "return_type": "object",
+      "timeout": "10s",
+      "retries": 1
+    },
+    {
+      "name": "get_cat_fact",
+      "description": "Get a random cat fact",
+      "endpoint": "https://catfact.ninja/fact",
+      "method": "GET",
+      "parameters": [],
+      "return_type": "object"
+    }
+  ],
+  "prompts": [
+    {
+      "name": "motivation",
+      "description": "Provide motivation based on a quote and cat fact",
+      "content": "Combine this inspirational quote with a fun cat fact to create a motivational message: Quote: {quote}, Cat Fact: {cat_fact}",
+      "arguments": [
+        {
+          "name": "quote",
+          "description": "An inspirational quote",
+          "required": true
+        },
+        {
+          "name": "cat_fact",
+          "description": "A cat fact",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "security": {
+    "enable_cors": true,
+    "enable_rate_limit": false,
+    "enable_auth": false,
+    "oauth": {
+      "enabled": false,
+      "authorization_servers": [],
+      "required_scopes": [],
+      "accepted_audiences": []
+    }
+  },
+  "runtime": {
+    "max_concurrent_requests": 64,
+    "default_timeout": "15s",
+    "health_check_interval": "30s",
+    "metrics_enabled": true,
+    "log_level": "info",
+    "environment": "development"
+  }
+} 

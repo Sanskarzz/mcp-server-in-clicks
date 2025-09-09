@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mcp-backend.fullname" . }}
+  labels:
+    app.kubernetes.io/name: mcp-backend
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mcp-backend
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mcp-backend
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ include "mcp-backend.fullname" . }}
+      containers:
+        - name: backend
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 6000
+          env:
+            - name: MONGO_URI
+              value: {{ .Values.env.MONGO_URI | quote }}
+            - name: MONGO_DB
+              value: {{ .Values.env.MONGO_DB | quote }}
+            - name: HELM_NAMESPACE
+              value: {{ .Values.env.HELM_NAMESPACE | quote }}
+            - name: HELM_CHART_PATH
+              value: {{ .Values.env.HELM_CHART_PATH | quote }}
+            - name: JWT_SECRET
+              value: {{ .Values.env.JWT_SECRET | quote }}
+            - name: GOOGLE_CLIENT_ID
+              value: {{ .Values.env.GOOGLE_CLIENT_ID | quote }}
+            - name: GOOGLE_CLIENT_SECRET
+              value: {{ .Values.env.GOOGLE_CLIENT_SECRET | quote }}
+            - name: OAUTH_REDIRECT_URL
+              value: {{ .Values.env.OAUTH_REDIRECT_URL | quote }}
+

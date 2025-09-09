@@ -1,0 +1,51 @@
+{
+  "server": {
+    "name": "github-weather-server",
+    "version": "1.0.0",
+    "description": "Examples using GitHub public API and Open-Meteo weather"
+  },
+  "tools": [
+    {
+      "name": "github_user",
+      "description": "Fetch basic public profile for a GitHub username",
+      "endpoint": "https://api.github.com/users/{{.username}}",
+      "method": "GET",
+      "headers": {"Accept": "application/vnd.github+json", "User-Agent": "mcp-server-template"},
+      "parameters": [
+        {"name": "username", "type": "string", "description": "GitHub username", "required": true}
+      ],
+      "return_type": "object",
+      "timeout": "8s"
+    },
+    {
+      "name": "weather_by_coords",
+      "description": "Current temperature for latitude/longitude (Open-Meteo)",
+      "endpoint": "https://api.open-meteo.com/v1/forecast",
+      "method": "GET",
+      "parameters": [
+        {"name": "lat", "type": "number", "description": "Latitude", "required": true},
+        {"name": "lon", "type": "number", "description": "Longitude", "required": true}
+      ],
+      "query_params": {
+        "latitude": "{{.lat}}",
+        "longitude": "{{.lon}}",
+        "current_weather": "true"
+      },
+      "return_type": "object",
+      "timeout": "8s"
+    }
+  ],
+  "prompts": [
+    {
+      "name": "who_and_weather",
+      "description": "Build a sentence about the GitHub user and the weather",
+      "content": "User: {user}. Weather: {weather}. Write a friendly one-liner.",
+      "arguments": [
+        {"name": "user", "description": "GitHub user JSON", "required": true},
+        {"name": "weather", "description": "Weather JSON", "required": true}
+      ]
+    }
+  ]
+}
+
+

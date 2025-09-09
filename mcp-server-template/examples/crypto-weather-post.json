@@ -1,0 +1,40 @@
+{
+  "server": {
+    "name": "crypto-weather-post",
+    "version": "1.0.0",
+    "description": "Demonstrates GET with params and POST with body templates"
+  },
+  "tools": [
+    {
+      "name": "open_meteo_hourly",
+      "description": "Hourly temperature for coordinates",
+      "endpoint": "https://api.open-meteo.com/v1/forecast",
+      "method": "GET",
+      "parameters": [
+        {"name": "lat", "type": "number", "description": "Latitude", "required": true},
+        {"name": "lon", "type": "number", "description": "Longitude", "required": true}
+      ],
+      "query_params": {
+        "latitude": "{{.lat}}",
+        "longitude": "{{.lon}}",
+        "hourly": "temperature_2m"
+      },
+      "return_type": "object"
+    },
+    {
+      "name": "httpbin_post_echo",
+      "description": "POST echo using httpbin.org",
+      "endpoint": "https://httpbin.org/post",
+      "method": "POST",
+      "headers": {"Content-Type": "application/json"},
+      "parameters": [
+        {"name": "message", "type": "string", "description": "Message to echo", "required": true}
+      ],
+      "body_template": "{\n  \"message\": \"{{.message}}\"\n}",
+      "return_type": "object",
+      "timeout": "8s"
+    }
+  ]
+}
+
+

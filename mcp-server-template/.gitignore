@@ -1,0 +1,136 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.html
+coverage.xml
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+
+# Application binary
+mcp-server
+/mcp-server
+
+# Build artifacts
+/dist/
+/build/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Log files
+*.log
+logs/
+/logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Configuration files with sensitive data
+config.local.json
+config.prod.json
+*-secrets.json
+
+# Test data and fixtures
+test-data/
+fixtures/
+
+# Benchmark files
+bench-old.txt
+bench-new.txt
+
+# Docker files (optional, uncomment if you don't want to track them)
+# Dockerfile.local
+# docker-compose.override.yml
+
+# Kubernetes files with secrets
+# k8s/*-secret.yaml
+# deploy/k8s/*-secret.yaml
+
+# Helm generated files
+/charts/
+Chart.lock
+
+# Backup files
+*.bak
+*.backup
+
+# Editor backup files
+*~
+\#*\#
+.\#*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage reports
+coverage/
+.nyc_output
+
+# Dependency lock files (consider whether to include these)
+# go.sum
+
+# Documentation build artifacts
+docs/_build/
+docs/site/
+
+# Local development scripts
+dev-*.sh
+local-*.sh
+
+# SSL certificates and keys
+*.pem
+*.key
+*.crt
+*.csr
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache directories
+.cache/
+cache/
+
+# Runtime configuration
+runtime.json
+local-config.json 

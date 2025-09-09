@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+
+html { @apply bg-gray-50 text-gray-900; }
+
+body { @apply text-gray-900; }
+
+.gradient-hero {
+  background: linear-gradient(135deg, #7c3aed, #4c1d95);
+}
+

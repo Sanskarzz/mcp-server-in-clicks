@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mcp
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-secrets
+  namespace: mcp
+type: Opaque
+stringData:
+  JWT_SECRET: "secret"
+  MONGO_URI: "mongodb://admin:replace-me@mongo-mongodb-0.mongo-mongodb-headless.mcp.svc.cluster.local:27017,mongo-mongodb-1.mongo-mongodb-headless.mcp.svc.cluster.local:27017/?replicaSet=rs0"
+  MONGO_DB: "mcp"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-backend
+  namespace: mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcp-backend
+  template:
+    metadata:
+      labels:
+        app: mcp-backend
+    spec:
+      serviceAccountName: mcp-backend
+      containers:
+        - name: backend
+          image: yourrepo/mcp-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 6000
+          envFrom:
+            - secretRef:
+                name: backend-secrets
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mcp-backend
+  namespace: mcp
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: mcp-backend-helm
+rules:
+  - apiGroups: ["", "apps", "batch", "extensions"]
+    resources: ["configmaps", "secrets", "services", "serviceaccounts", "events", "pods", "pods/log", "endpoints", "replicasets", "deployments", "statefulsets", "jobs", "cronjobs"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: mcp-backend-helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: mcp-backend-helm
+subjects:
+  - kind: ServiceAccount
+    name: mcp-backend
+    namespace: mcp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-backend
+  namespace: mcp
+spec:
+  selector:
+    app: mcp-backend
+  ports:
+    - port: 6000
+      targetPort: 6000
+      protocol: TCP
+
+
+

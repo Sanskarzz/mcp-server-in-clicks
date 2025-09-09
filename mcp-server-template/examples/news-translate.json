@@ -1,0 +1,46 @@
+{
+  "server": {
+    "name": "news-translate-server",
+    "version": "1.0.0",
+    "description": "Fetch top headlines and translate text via a public translator"
+  },
+  "tools": [
+    {
+      "name": "hackernews_top",
+      "description": "Fetch top Hacker News stories IDs",
+      "endpoint": "https://hacker-news.firebaseio.com/v0/topstories.json",
+      "method": "GET",
+      "parameters": [],
+      "return_type": "array",
+      "timeout": "8s"
+    },
+    {
+      "name": "hackernews_item",
+      "description": "Fetch a Hacker News item by ID",
+      "endpoint": "https://hacker-news.firebaseio.com/v0/item/{{.id}}.json",
+      "method": "GET",
+      "parameters": [
+        {"name": "id", "type": "number", "description": "HN item id", "required": true}
+      ],
+      "return_type": "object",
+      "timeout": "8s"
+    },
+    {
+      "name": "translate_text",
+      "description": "Translate text to a target language using LibreTranslate demo (rate limited)",
+      "endpoint": "https://libretranslate.de/translate",
+      "method": "POST",
+      "headers": {"Content-Type": "application/json"},
+      "parameters": [
+        {"name": "q", "type": "string", "description": "Text to translate", "required": true, "validation": {"min_length": 1}},
+        {"name": "target", "type": "string", "description": "Target ISO code (e.g., es, fr)", "required": true}
+      ],
+      "body_template": "{\n  \"q\": \"{{.q}}\",\n  \"source\": \"auto\",\n  \"target\": \"{{.target}}\",\n  \"format\": \"text\"\n}",
+      "return_type": "object",
+      "timeout": "12s",
+      "retries": 1
+    }
+  ]
+}
+
+

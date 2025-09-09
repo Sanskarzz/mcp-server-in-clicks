@@ -1,0 +1,191 @@
+{
+  "server": {
+    "name": "weather-api-server",
+    "version": "1.0.0",
+    "description": "A comprehensive weather data MCP server that provides current weather, forecasts, and historical data",
+    "author": "Your Company",
+    "license": "MIT"
+  },
+  "tools": [
+    {
+      "name": "get_current_weather",
+      "description": "Get current weather conditions for a specific location",
+      "endpoint": "https://api.openweathermap.org/data/2.5/weather",
+      "method": "GET",
+      "headers": {},
+      "query_params": {
+        "appid": "${OPENWEATHER_API_KEY}",
+        "units": "metric"
+      },
+      "parameters": [
+        {
+          "name": "location",
+          "type": "string",
+          "description": "City name or coordinates (e.g., 'London' or 'lat,lon')",
+          "required": true,
+          "validation": {
+            "min_length": 2,
+            "max_length": 100
+          }
+        },
+        {
+          "name": "country_code",
+          "type": "string",
+          "description": "Two-letter country code (ISO 3166)",
+          "required": false,
+          "validation": {
+            "pattern": "^[A-Z]{2}$"
+          }
+        }
+      ],
+      "return_type": "object",
+      "timeout": "30s",
+      "retries": 3,
+      "validation": {
+        "status_codes": [200],
+        "required_fields": ["weather", "main", "name"]
+      }
+    },
+    {
+      "name": "get_weather_forecast",
+      "description": "Get 5-day weather forecast for a specific location",
+      "endpoint": "https://api.openweathermap.org/data/2.5/forecast",
+      "method": "GET",
+      "query_params": {
+        "appid": "${OPENWEATHER_API_KEY}",
+        "units": "metric"
+      },
+      "parameters": [
+        {
+          "name": "location",
+          "type": "string",
+          "description": "City name for the forecast",
+          "required": true
+        },
+        {
+          "name": "days",
+          "type": "number",
+          "description": "Number of forecast days (1-5)",
+          "required": false,
+          "default": 5,
+          "validation": {
+            "min_value": 1,
+            "max_value": 5
+          }
+        }
+      ],
+      "return_type": "object",
+      "timeout": "30s",
+      "retries": 2
+    },
+    {
+      "name": "search_cities",
+      "description": "Search for cities by name to get precise location data",
+      "endpoint": "http://api.openweathermap.org/geo/1.0/direct",
+      "method": "GET",
+      "query_params": {
+        "appid": "${OPENWEATHER_API_KEY}",
+        "limit": "5"
+      },
+      "parameters": [
+        {
+          "name": "city_name",
+          "type": "string",
+          "description": "Name of the city to search for",
+          "required": true,
+          "validation": {
+            "min_length": 2,
+            "max_length": 50
+          }
+        }
+      ],
+      "return_type": "array",
+      "timeout": "15s",
+      "retries": 2
+    }
+  ],
+  "prompts": [
+    {
+      "name": "weather_summary",
+      "description": "Generate a comprehensive weather summary for a location",
+      "content": "Please provide a detailed weather summary for {location}. Include current conditions, temperature, humidity, wind speed, and any weather alerts. Format the response in a user-friendly manner.",
+      "arguments": [
+        {
+          "name": "location",
+          "description": "The location to get weather summary for",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "weather_comparison",
+      "description": "Compare weather between two locations",
+      "content": "Compare the current weather conditions between {location1} and {location2}. Highlight key differences in temperature, precipitation, and overall conditions. Suggest which location has better weather conditions and why.",
+      "arguments": [
+        {
+          "name": "location1",
+          "description": "First location for comparison",
+          "required": true
+        },
+        {
+          "name": "location2", 
+          "description": "Second location for comparison",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "travel_weather_advice",
+      "description": "Provide travel advice based on weather conditions",
+      "content": "Based on the weather forecast for {destination}, provide travel advice for someone visiting from {origin} on {travel_date}. Include recommendations for clothing, activities, and any weather-related precautions.",
+      "arguments": [
+        {
+          "name": "destination",
+          "description": "Travel destination",
+          "required": true
+        },
+        {
+          "name": "origin",
+          "description": "Traveler's origin location",
+          "required": true
+        },
+        {
+          "name": "travel_date",
+          "description": "Date of travel",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "uri": "weather://docs/api-reference",
+      "name": "Weather API Documentation",
+      "description": "Complete API reference for the weather service endpoints",
+      "mime_type": "text/markdown",
+      "content": "# Weather API Reference\n\n## Overview\nThis MCP server provides access to comprehensive weather data including current conditions, forecasts, and location search.\n\n## Available Tools\n\n### get_current_weather\nRetrieve current weather conditions for any location worldwide.\n\n**Parameters:**\n- `location` (required): City name or coordinates\n- `country_code` (optional): Two-letter country code\n\n**Example Usage:**\n```\nlocation: \"London\"\ncountry_code: \"GB\"\n```\n\n### get_weather_forecast\nGet detailed 5-day weather forecast.\n\n**Parameters:**\n- `location` (required): City name\n- `days` (optional): Number of forecast days (1-5, default: 5)\n\n### search_cities\nSearch for cities to get precise location data.\n\n**Parameters:**\n- `city_name` (required): Name of city to search\n\n## Data Sources\n- Primary: OpenWeatherMap API\n- Coverage: Global\n- Update Frequency: Real-time\n\n## Rate Limits\n- 1000 calls/day for free tier\n- 60 calls/minute\n\n## Error Handling\nAll endpoints include automatic retry logic and comprehensive error messages."
+    },
+    {
+      "uri": "weather://config/sample-locations",
+      "name": "Sample Locations",
+      "description": "List of sample locations for testing weather queries",
+      "mime_type": "application/json",
+      "content": "{\n  \"major_cities\": [\n    {\"name\": \"New York\", \"country\": \"US\", \"coordinates\": \"40.7128,-74.0060\"},\n    {\"name\": \"London\", \"country\": \"GB\", \"coordinates\": \"51.5074,-0.1278\"},\n    {\"name\": \"Tokyo\", \"country\": \"JP\", \"coordinates\": \"35.6762,139.6503\"},\n    {\"name\": \"Sydney\", \"country\": \"AU\", \"coordinates\": \"-33.8688,151.2093\"},\n    {\"name\": \"Paris\", \"country\": \"FR\", \"coordinates\": \"48.8566,2.3522\"}\n  ],\n  \"test_cases\": [\n    {\"location\": \"London,GB\", \"expected_country\": \"GB\"},\n    {\"location\": \"40.7128,-74.0060\", \"expected_city\": \"New York\"},\n    {\"location\": \"InvalidCity123\", \"expected_error\": true}\n  ]\n}"
+    }
+  ],
+  "security": {
+    "enable_cors": true,
+    "allowed_origins": ["*"],
+    "enable_rate_limit": true,
+    "rate_limit": 100,
+    "enable_auth": false
+  },
+  "runtime": {
+    "max_concurrent_requests": 50,
+    "default_timeout": "30s",
+    "health_check_interval": "60s",
+    "metrics_enabled": true,
+    "log_level": "info",
+    "environment": "development"
+  }
+} 

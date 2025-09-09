@@ -1,0 +1,25 @@
+{
+  "server": {"name": "public-apis-oauth", "version": "1.0.0", "description": "OAuth demo with 401+WWW-Authenticate"},
+  "tools": [],
+  "security": {
+    "enable_cors": true,
+    "enable_rate_limit": false,
+    "enable_auth": false,
+    "oauth": {
+      "enabled": true,
+      "authorization_servers": ["https://example-issuer"],
+      "required_scopes": [],
+      "accepted_audiences": []
+    }
+  },
+  "runtime": {
+    "max_concurrent_requests": 64,
+    "default_timeout": "15s",
+    "health_check_interval": "30s",
+    "metrics_enabled": false,
+    "log_level": "info",
+    "environment": "development"
+  }
+}
+
+

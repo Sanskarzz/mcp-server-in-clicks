@@ -1,0 +1,22 @@
+image:
+  repository: yourrepo/mcp-backend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 6000
+
+env:
+  MONGO_URI: "mongodb://localhost:27017"
+  MONGO_DB: "mcp"
+  HELM_NAMESPACE: "mcp"
+  HELM_CHART_PATH: "../mcp-server-template/deploy/helm"
+  JWT_SECRET: "secret"
+  GOOGLE_CLIENT_ID: ""
+  GOOGLE_CLIENT_SECRET: ""
+  OAUTH_REDIRECT_URL: "http://localhost:6000/auth/google/callback"
+
+rbac:
+  create: true
+
